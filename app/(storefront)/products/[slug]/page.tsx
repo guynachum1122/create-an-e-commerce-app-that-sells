@@ -16,8 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!product) return {};
   return buildProductMetadata({
     ...product,
-    averageRating: Number(product.averageRating),
-    tags: product.tags.map((t) => t.tag),
+    tags: product.tags.map((t) => ({ name: t.tag.name })),
   });
 }
 
