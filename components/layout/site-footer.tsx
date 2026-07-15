@@ -3,11 +3,16 @@ import { Leaf } from 'lucide-react';
 import { prisma } from '@/lib/db';
 
 export async function SiteFooter() {
-  const categories = await prisma.category.findMany({
-    where: { isActive: true, parentId: null },
-    orderBy: { sortOrder: 'asc' },
-    take: 8,
-  });
+  let categories: { id: string; name: string; slug: string }[] = [];
+  try {
+    categories = await prisma.category.findMany({
+      where: { isActive: true, parentId: null },
+      orderBy: { sortOrder: 'asc' },
+      take: 8,
+    });
+  } catch {
+    // Build-time or transient DB outages: render footer without category links.
+  }
 
   return (
     <footer className="border-t bg-secondary/30">
