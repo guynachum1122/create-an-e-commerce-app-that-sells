@@ -1,25 +1,28 @@
 import { PrismaClient } from '@prisma/client';
-
-/** Stable, publicly reachable product photos (no API key, no 404s). */
-function productImageUrl(slug: string, variant = 0) {
-  const seed = variant ? `${slug}-${variant}` : slug;
-  return `https://picsum.photos/seed/${encodeURIComponent(seed)}/800/800`;
-}
+import { categoryImageUrl, productImageUrl } from '../lib/products/product-images';
 
 const prisma = new PrismaClient();
 
 async function main() {
   const products = await prisma.product.findMany({
     orderBy: { createdAt: 'asc' },
-    include: { images: { orderBy: { sortOrder: 'asc' } } },
+    include: {
+      images: { orderBy: { sortOrder: 'asc' } },
+      categories: { include: { category: true } },
+    },
   });
 
   let updated = 0;
   for (const product of products) {
+    const categorySlug = product.categories[0]?.category.slug ?? null;
+
     if (product.images[0]) {
       await prisma.productImage.update({
         where: { id: product.images[0].id },
-        data: { url: productImageUrl(product.slug), altText: product.name },
+        data: {
+          url: productImageUrl(product.slug, 0, categorySlug),
+          altText: product.name,
+        },
       });
       updated++;
     }
@@ -27,7 +30,7 @@ async function main() {
       await prisma.productImage.update({
         where: { id: product.images[1].id },
         data: {
-          url: productImageUrl(product.slug, 1),
+          url: productImageUrl(product.slug, 1, categorySlug),
           altText: `${product.name} — alternate view`,
         },
       });
@@ -39,7 +42,7 @@ async function main() {
   for (const category of categories) {
     await prisma.category.update({
       where: { id: category.id },
-      data: { imageUrl: productImageUrl(`category-${category.slug}`) },
+      data: { imageUrl: categoryImageUrl(category.slug) },
     });
   }
 
