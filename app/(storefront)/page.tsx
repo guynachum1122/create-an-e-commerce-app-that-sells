@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
+import { resolveCatalogProducts } from '@/lib/products/product-images';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/product/product-card';
 import { JsonLd } from '@/components/seo/JsonLd';
@@ -9,7 +10,7 @@ import { ShieldCheck, Truck, RotateCcw } from 'lucide-react';
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const [categories, featuredProducts, tags] = await Promise.all([
+  const [categories, featuredProductsRaw, tags] = await Promise.all([
     prisma.category.findMany({
       where: { isActive: true, parentId: null },
       orderBy: { sortOrder: 'asc' },
@@ -26,6 +27,8 @@ export default async function HomePage() {
     }),
     prisma.tag.findMany({ take: 10 }),
   ]);
+
+  const featuredProducts = resolveCatalogProducts(featuredProductsRaw);
 
   return (
     <>
