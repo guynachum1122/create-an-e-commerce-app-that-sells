@@ -1,9 +1,9 @@
 'use client';
 
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { formatPrice } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { RemoteImage } from '@/components/ui/remote-image';
 import { toast } from 'sonner';
 
 type Item = {
@@ -46,7 +46,7 @@ export function CartLineItems({ items }: { items: Item[] }) {
         <div key={item.id} className="flex gap-4 rounded-lg border bg-card p-4">
           <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md bg-muted">
             {item.variant.product.images[0] && (
-              <Image src={item.variant.product.images[0].url} alt="" fill className="object-cover" />
+              <RemoteImage src={item.variant.product.images[0].url} alt="" fill className="object-cover" />
             )}
           </div>
           <div className="flex-1">
