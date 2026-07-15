@@ -1,8 +1,8 @@
 'use client';
 
-import Image from 'next/image';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { RemoteImage } from '@/components/ui/remote-image';
 
 type ProductImage = { id: string; url: string; altText?: string | null };
 
@@ -22,13 +22,12 @@ export function ProductGallery({
   return (
     <div>
       <div className="relative aspect-square overflow-hidden rounded-xl bg-muted">
-        <Image
+        <RemoteImage
           src={mainUrl}
           alt=""
           fill
           className="object-cover"
           priority
-          sizes="(max-width: 1024px) 100vw, 50vw"
         />
       </div>
       {gallery.length > 1 && !variantImageUrl && (
@@ -43,7 +42,7 @@ export function ProductGallery({
                 i === selectedIndex ? 'border-primary' : 'border-transparent'
               )}
             >
-              <Image src={img.url} alt="" fill className="object-cover" sizes="64px" />
+              <RemoteImage src={img.url} alt="" fill className="object-cover" />
             </button>
           ))}
         </div>
