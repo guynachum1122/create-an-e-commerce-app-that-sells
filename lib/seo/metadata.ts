@@ -131,7 +131,7 @@ export function buildPrivacyMetadata(): Metadata {
 export function noIndexMetadata(title: string, nofollow = false): Metadata {
   return {
     title,
-    robots: { index: false, follow: !nofollow, ...(nofollow ? { nofollow: true } : {}) },
+    robots: nofollow ? 'noindex, nofollow' : 'noindex, follow',
   };
 }
 
