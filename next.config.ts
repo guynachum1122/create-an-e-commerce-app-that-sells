@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'fastly.picsum.photos',
+        hostname: 'loremflickr.com',
         pathname: '/**',
       },
     ],
