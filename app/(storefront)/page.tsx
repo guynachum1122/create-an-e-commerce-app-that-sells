@@ -6,7 +6,7 @@ import { JsonLd } from '@/components/seo/JsonLd';
 import { homepageJsonLd } from '@/lib/seo/json-ld';
 import { ShieldCheck, Truck, RotateCcw } from 'lucide-react';
 
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   const [categories, featuredProducts, tags] = await Promise.all([
