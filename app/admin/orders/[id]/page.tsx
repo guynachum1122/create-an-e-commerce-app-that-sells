@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { formatPrice } from '@/lib/utils';
-import { OrderActions } from '@/components/admin/order-actions';
+import { AdminOrderActions } from '@/components/admin/order-actions';
 
 export default async function AdminOrderDetailPage({
   params,
@@ -67,7 +67,7 @@ export default async function AdminOrderDetailPage({
       </div>
 
       <div className="mt-6">
-        <OrderActions orderId={order.id} currentStatus={order.status} trackingNumber={order.trackingNumber} trackingUrl={order.trackingUrl} />
+        <AdminOrderActions orderId={order.id} currentStatus={order.status} trackingNumber={order.trackingNumber} trackingUrl={order.trackingUrl} />
       </div>
     </div>
   );
