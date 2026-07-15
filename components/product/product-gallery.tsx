@@ -24,7 +24,7 @@ export function ProductGallery({
       <div className="relative aspect-square overflow-hidden rounded-xl bg-muted">
         <Image
           src={mainUrl}
-          alt={gallery[selectedIndex]?.altText || productName}
+          alt=""
           fill
           className="object-cover"
           priority
