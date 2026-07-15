@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { prisma } from '@/lib/db';
 import { auth } from '@/auth';
+import { resolveProductImageUrl } from '@/lib/products/product-images';
 
 const GUEST_CART_COOKIE = 'guest_cart_id';
 
@@ -32,6 +33,31 @@ const cartInclude = {
   },
 } as const;
 
+function withResolvedCartImages<T extends {
+  items: {
+    variant: {
+      product: { slug: string; images: { url: string }[] };
+    };
+  }[];
+}>(cart: T): T {
+  return {
+    ...cart,
+    items: cart.items.map((item) => ({
+      ...item,
+      variant: {
+        ...item.variant,
+        product: {
+          ...item.variant.product,
+          images: item.variant.product.images.map((img, index) => ({
+            ...img,
+            url: resolveProductImageUrl(item.variant.product.slug, img.url, index),
+          })),
+        },
+      },
+    })),
+  };
+}
+
 export async function getOrCreateCart() {
   const session = await auth();
   const guestSessionId = session?.user?.id ? undefined : await getGuestSessionId();
@@ -48,7 +74,7 @@ export async function getOrCreateCart() {
         include: cartInclude,
       });
     }
-    return cart;
+    return withResolvedCartImages(cart);
   }
 
   let cart = await prisma.cart.findUnique({
@@ -63,7 +89,7 @@ export async function getOrCreateCart() {
     });
   }
 
-  return cart;
+  return withResolvedCartImages(cart);
 }
 
 export async function mergeGuestCart(userId: string, guestSessionId: string) {
