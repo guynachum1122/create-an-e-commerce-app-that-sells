@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Search, ShoppingCart, User, Heart, Leaf, BookOpen, Menu, X } from 'lucide-react';
+import { RemoteImage } from '@/components/ui/remote-image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
@@ -61,7 +61,7 @@ function SearchForm({
                   onClick={() => setSuggestions(null)}
                 >
                   {p.images[0] && (
-                    <Image src={p.images[0].url} alt="" width={32} height={32} className="rounded object-cover" />
+                    <RemoteImage src={p.images[0].url} alt="" className="h-8 w-8 rounded object-cover" />
                   )}
                   <span className="text-sm">{p.name}</span>
                 </Link>
