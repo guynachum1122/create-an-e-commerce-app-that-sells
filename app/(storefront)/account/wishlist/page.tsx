@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/db';
+import { resolveCatalogProduct } from '@/lib/products/product-images';
 import { noIndexMetadata } from '@/lib/seo/metadata';
 import { ProductCard } from '@/components/product/product-card';
 import { WishlistRemoveButton } from '@/components/account/wishlist-remove-button';
@@ -39,14 +40,17 @@ export default async function WishlistPage() {
     <div className="container mx-auto px-4 py-8 lg:px-8">
       <h1 className="font-display text-3xl font-bold">Wishlist</h1>
       <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {items.map(({ product }) => (
+        {items.map(({ product }) => {
+          const resolved = resolveCatalogProduct(product);
+          return (
           <div key={product.id} className="relative">
             <div className="absolute right-2 top-2 z-10">
               <WishlistRemoveButton productId={product.id} />
             </div>
-            <ProductCard product={{ ...product, averageRating: Number(product.averageRating) }} />
+            <ProductCard product={{ ...resolved, averageRating: Number(resolved.averageRating) }} />
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
