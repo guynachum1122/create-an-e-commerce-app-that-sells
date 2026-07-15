@@ -8,9 +8,11 @@ import { rateLimit } from '@/lib/rate-limit';
 import type { UserRole } from '@prisma/client';
 
 const PLACEHOLDER_SECRET = 'change-me-in-production-use-openssl-rand-base64-32';
+const isProductionBuild = process.env.NEXT_PHASE === 'phase-production-build';
 
 if (
   process.env.NODE_ENV === 'production' &&
+  !isProductionBuild &&
   (!process.env.AUTH_SECRET || process.env.AUTH_SECRET === PLACEHOLDER_SECRET)
 ) {
   throw new Error('AUTH_SECRET must be set to a secure random value in production');
