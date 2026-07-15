@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db';
 import { Prisma } from '@prisma/client';
+import { resolveCatalogProduct, resolveCatalogProducts, resolveProductImageUrl } from '@/lib/products/product-images';
 
 export type ProductFilters = {
   categorySlug?: string;
@@ -158,11 +159,11 @@ export async function searchProducts(filters: ProductFilters) {
     }
   }
 
-  return { products: filtered, total, page, limit, totalPages: Math.ceil(total / limit) };
+  return { products: resolveCatalogProducts(filtered), total, page, limit, totalPages: Math.ceil(total / limit) };
 }
 
 export async function getProductBySlug(slug: string) {
-  return prisma.product.findUnique({
+  const product = await prisma.product.findUnique({
     where: { slug, isPublished: true },
     include: {
       images: { orderBy: { sortOrder: 'asc' } },
@@ -178,6 +179,8 @@ export async function getProductBySlug(slug: string) {
       },
     },
   });
+
+  return product ? resolveCatalogProduct(product) : null;
 }
 
 export async function getRecommendations(productId: string, limit = 4) {
@@ -234,7 +237,7 @@ export async function getRecommendations(productId: string, limit = 4) {
     products = [...products, ...fallback];
   }
 
-  return products.slice(0, limit);
+  return resolveCatalogProducts(products.slice(0, limit));
 }
 
 export async function searchSuggestions(query: string) {
@@ -268,7 +271,17 @@ export async function searchSuggestions(query: string) {
     }),
   ]);
 
-  return { products, categories, tags };
+  return {
+    products: products.map((p) => ({
+      name: p.name,
+      slug: p.slug,
+      images: p.images.map((img, index) => ({
+        url: resolveProductImageUrl(p.slug, img.url, index),
+      })),
+    })),
+    categories,
+    tags,
+  };
 }
 
 export async function getCategoryAttributeOptions(categorySlug: string) {
