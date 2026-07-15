@@ -1,7 +1,24 @@
-import { auth } from '@/auth';
+import { getToken } from 'next-auth/jwt';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { rateLimitAsync, getClientIp } from '@/lib/rate-limit';
+
+type AuthToken = {
+  sub?: string;
+  id?: string;
+  role?: 'ADMIN' | 'CUSTOMER';
+};
+
+async function getAuthToken(request: NextRequest): Promise<AuthToken | null> {
+  return (await getToken({
+    req: request,
+    secret: process.env.AUTH_SECRET,
+  })) as AuthToken | null;
+}
+
+function isAuthenticated(token: AuthToken | null): boolean {
+  return Boolean(token?.sub || token?.id);
+}
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -17,9 +34,16 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  const needsAuth =
+    pathname.startsWith('/api/admin') ||
+    pathname.startsWith('/admin') ||
+    (pathname.startsWith('/checkout') && !pathname.includes('/confirmation')) ||
+    pathname.startsWith('/account');
+
+  const token = needsAuth ? await getAuthToken(request) : null;
+
   if (pathname.startsWith('/api/admin')) {
-    const session = await auth();
-    if (!session?.user || session.user.role !== 'ADMIN') {
+    if (!isAuthenticated(token) || token?.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
   }
@@ -29,25 +53,22 @@ export async function middleware(request: NextRequest) {
   }
 
   if (pathname.startsWith('/admin')) {
-    const session = await auth();
-    if (!session?.user) {
+    if (!isAuthenticated(token)) {
       return NextResponse.redirect(new URL('/login?callbackUrl=/admin', request.url));
     }
-    if (session.user.role !== 'ADMIN') {
+    if (token?.role !== 'ADMIN') {
       return NextResponse.redirect(new URL('/403', request.url));
     }
   }
 
   if (pathname.startsWith('/checkout') && !pathname.includes('/confirmation')) {
-    const session = await auth();
-    if (!session?.user) {
+    if (!isAuthenticated(token)) {
       return NextResponse.redirect(new URL('/login?callbackUrl=/checkout', request.url));
     }
   }
 
   if (pathname.startsWith('/account')) {
-    const session = await auth();
-    if (!session?.user) {
+    if (!isAuthenticated(token)) {
       return NextResponse.redirect(new URL('/login?callbackUrl=' + encodeURIComponent(pathname), request.url));
     }
   }
