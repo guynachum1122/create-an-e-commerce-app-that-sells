@@ -35,7 +35,7 @@ async function getDashboardData(days: number) {
       ? prisma.orderItem.groupBy({
           by: ['productId', 'productName'],
           where: { orderId: { in: paidOrderIds } },
-          _sum: { quantity: true },
+          _sum: { quantity: true, lineTotal: true },
           orderBy: { _sum: { quantity: 'desc' } },
           take: 10,
         })
