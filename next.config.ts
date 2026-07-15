@@ -9,9 +9,6 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: '**.unsplash.com' },
     ],
   },
-  experimental: {
-    instrumentationHook: true,
-  },
 };
 
 export default withSentryConfig(nextConfig, {
