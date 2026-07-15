@@ -28,7 +28,8 @@ const FOOD_IMAGES = [
 ] as const;
 
 let imageCursor = 0;
-const nextImage = () => {
+const nextImage = (slug?: string) => {
+  if (slug) return `https://picsum.photos/seed/${encodeURIComponent(slug)}/800/800`;
   const id = FOOD_IMAGES[imageCursor % FOOD_IMAGES.length];
   imageCursor += 1;
   return IMG(id);
@@ -579,13 +580,10 @@ async function main() {
         },
         images: {
           create: [
-            { url: p.image, altText: p.name, isPrimary: true, sortOrder: 0 },
-            ...(p.extraImages || []).map((url, i) => ({
-              url,
-              altText: `${p.name} — image ${i + 2}`,
-              isPrimary: false,
-              sortOrder: i + 1,
-            })),
+            { url: nextImage(p.slug), altText: p.name, isPrimary: true, sortOrder: 0 },
+            ...(p.extraImages?.length
+              ? [{ url: nextImage(`${p.slug}-alt`), altText: `${p.name} — image 2`, isPrimary: false, sortOrder: 1 }]
+              : []),
           ],
         },
       },
