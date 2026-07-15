@@ -27,21 +27,23 @@ export function NutritionFactsCard({
       <h2 className="border-b-8 border-foreground pb-2 text-2xl font-bold">Nutrition Facts</h2>
       <p className="mt-2 text-sm">Serving size: {healthInfo.servingSize}</p>
       {healthInfo.servingsPerContainer && (
-        <p className="text-sm text-muted-foreground">Servings per container: {healthInfo.servingsPerContainer}</p>
+        <p className="text-sm text-muted-foreground">Servings per container: {String(healthInfo.servingsPerContainer)}</p>
       )}
       <div className="mt-4 border-b-4 border-foreground py-2">
         <p className="text-3xl font-bold">{healthInfo.calories} <span className="text-lg font-normal">Calories</span></p>
       </div>
       <div className="mt-2 space-y-1 text-sm">
-        {[
-          ['Protein', `${healthInfo.proteinGrams}g`],
-          ['Total Carbohydrate', `${healthInfo.carbohydratesGrams}g`],
-          ['Total Fat', `${healthInfo.fatGrams}g`],
-          healthInfo.fiberGrams ? ['Dietary Fiber', `${healthInfo.fiberGrams}g`] : null,
-          healthInfo.sugarGrams ? ['Total Sugars', `${healthInfo.sugarGrams}g`] : null,
-          healthInfo.sodiumMg != null ? ['Sodium', `${healthInfo.sodiumMg}mg`] : null,
-        ]
-          .filter(Boolean)
+        {(
+          [
+            ['Protein', `${healthInfo.proteinGrams}g`],
+            ['Total Carbohydrate', `${healthInfo.carbohydratesGrams}g`],
+            ['Total Fat', `${healthInfo.fatGrams}g`],
+            healthInfo.fiberGrams ? ['Dietary Fiber', `${healthInfo.fiberGrams}g`] : null,
+            healthInfo.sugarGrams ? ['Total Sugars', `${healthInfo.sugarGrams}g`] : null,
+            healthInfo.sodiumMg != null ? ['Sodium', `${healthInfo.sodiumMg}mg`] : null,
+          ] as Array<[string, string] | null>
+        )
+          .filter((row): row is [string, string] => row !== null)
           .map(([label, value]) => (
             <div key={label as string} className="flex justify-between border-b border-border py-1">
               <span>{label}</span>
