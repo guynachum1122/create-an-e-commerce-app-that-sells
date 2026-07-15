@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import * as Sentry from '@sentry/nextjs';
+import { Prisma } from '@prisma/client';
 import { requireAdmin } from '@/auth';
 import { prisma } from '@/lib/db';
 import { slugify } from '@/lib/utils';
@@ -78,7 +79,9 @@ export async function POST(request: Request) {
         searchText,
         categories: categoryIds?.length ? { create: categoryIds.map((id: string) => ({ categoryId: id })) } : undefined,
         tags: tagIds?.length ? { create: tagIds.map((id: string) => ({ tagId: id })) } : undefined,
-        healthInfo: healthInfo ? { create: healthInfo } : undefined,
+        healthInfo: healthInfo
+          ? { create: healthInfo as Prisma.HealthInfoCreateWithoutProductInput }
+          : undefined,
         images: images?.length
           ? { create: images.map((img: { url: string; altText?: string; sortOrder?: number; isPrimary?: boolean }, i: number) => ({
               url: img.url,
@@ -89,19 +92,11 @@ export async function POST(request: Request) {
           : undefined,
         variants: variants?.length
           ? {
-              create: variants.map((v: {
-                sku: string;
-                name: string;
-                price: number;
-                compareAtPrice?: number;
-                stockQuantity: number;
-                lowStockThreshold?: number;
-                attributes?: Record<string, string>;
-              }) => ({
+              create: variants.map((v) => ({
                 sku: v.sku,
                 name: v.name,
                 price: v.price,
-                compareAtPrice: v.compareAtPrice,
+                compareAtPrice: v.compareAtPrice ?? undefined,
                 stockQuantity: v.stockQuantity ?? 0,
                 lowStockThreshold: v.lowStockThreshold ?? 5,
                 attributes: v.attributes || {},
@@ -112,10 +107,11 @@ export async function POST(request: Request) {
       include: { variants: true },
     });
 
-    if (product.variants[0]) {
+    const defaultVariant = product.variants[0];
+    if (defaultVariant) {
       await prisma.product.update({
         where: { id: product.id },
-        data: { defaultVariantId: product.variants[0].id },
+        data: { defaultVariantId: defaultVariant.id },
       });
     }
 
