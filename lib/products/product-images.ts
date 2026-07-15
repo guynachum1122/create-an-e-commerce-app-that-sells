@@ -38,6 +38,8 @@ const CATEGORY_KEYWORDS: Record<string, string> = {
 
 const FALLBACK_KEYWORDS = 'healthy,food,grocery';
 
+const STOCK_PHOTO_HOSTS = ['picsum.photos', 'loremflickr.com', 'images.unsplash.com'];
+
 function keywordsForSlug(slug: string, categorySlug?: string | null): string {
   if (PRODUCT_KEYWORDS[slug]) return PRODUCT_KEYWORDS[slug];
   if (categorySlug && CATEGORY_KEYWORDS[categorySlug]) return CATEGORY_KEYWORDS[categorySlug];
@@ -54,4 +56,48 @@ export function productImageUrl(slug: string, variant = 0, categorySlug?: string
 export function categoryImageUrl(categorySlug: string): string {
   const keywords = CATEGORY_KEYWORDS[categorySlug] ?? FALLBACK_KEYWORDS;
   return `https://loremflickr.com/800/800/${keywords}/all?lock=${encodeURIComponent(`category-${categorySlug}`)}`;
+}
+
+function isStockPhotoUrl(url: string | null | undefined): boolean {
+  if (!url) return true;
+  try {
+    const host = new URL(url).hostname;
+    return STOCK_PHOTO_HOSTS.some((h) => host.includes(h));
+  } catch {
+    return true;
+  }
+}
+
+/** Pick a food-relevant image URL for storefront display. */
+export function resolveProductImageUrl(
+  slug: string,
+  storedUrl: string | null | undefined,
+  variant = 0,
+  categorySlug?: string | null,
+): string {
+  if (PRODUCT_KEYWORDS[slug] || isStockPhotoUrl(storedUrl)) {
+    return productImageUrl(slug, variant, categorySlug);
+  }
+  return storedUrl ?? productImageUrl(slug, variant, categorySlug);
+}
+
+type ProductWithImages = {
+  slug: string;
+  images: { url: string; sortOrder?: number; [key: string]: unknown }[];
+  categories?: { category: { slug: string } }[];
+};
+
+export function resolveCatalogProduct<T extends ProductWithImages>(product: T): T {
+  const categorySlug = product.categories?.[0]?.category.slug ?? null;
+  return {
+    ...product,
+    images: product.images.map((img, index) => ({
+      ...img,
+      url: resolveProductImageUrl(product.slug, img.url, index, categorySlug),
+    })),
+  };
+}
+
+export function resolveCatalogProducts<T extends ProductWithImages>(products: T[]): T[] {
+  return products.map(resolveCatalogProduct);
 }
