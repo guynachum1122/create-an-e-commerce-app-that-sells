@@ -4,7 +4,38 @@ import { buildSearchText } from '../lib/products/search-text';
 
 const prisma = new PrismaClient();
 
-const IMG = (id: string) => `https://images.unsplash.com/${id}?w=800&h=800&fit=crop`;
+const FOOD_IMAGES = [
+  'photo-1546069901-ba9599a7e63c',
+  'photo-1504674900247-0877df9cc836',
+  'photo-1565299624946-b28f40a0ae38',
+  'photo-1540189549336-e549e2df3771',
+  'photo-1495521821757-a1efb6729352',
+  'photo-1481070555726-e2fe8357725b',
+  'photo-1511690656952-0f67a0e2a3c8',
+  'photo-1467003909585-2f8a72700288',
+  'photo-1490645934777-92fd41b2ec18',
+  'photo-1482049010119-d63874965987',
+  'photo-1565958011703-39840bea1134',
+  'photo-1476224200861-5aad369c5502',
+  'photo-1493770348161-369560ae357d',
+  'photo-1484723091739-30a097e8f929',
+  'photo-1525351484163-7529414344d8',
+  'photo-1551782450-a2132b4ba21d',
+  'photo-1567620905732-2d1ec7ab7445',
+  'photo-1574489441777-0a916686375f',
+  'photo-1606787366850-94e1c4c2d693',
+  'photo-1613478223719-0be173ed6d70',
+] as const;
+
+let imageCursor = 0;
+const nextImage = () => {
+  const id = FOOD_IMAGES[imageCursor % FOOD_IMAGES.length];
+  imageCursor += 1;
+  return IMG(id);
+};
+
+const IMG = (id: string) =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=800&h=800&q=80`;
 
 async function main() {
   console.log('Seeding Harvest Basket...');
@@ -117,7 +148,7 @@ async function main() {
   }
 
   const categories = [
-    { slug: 'snacks', name: 'Snacks', description: 'Bars, nuts, crackers, and better-for-you bites.', imageUrl: IMG('photo-1599599810769-39faba15c96a'), sortOrder: 0 },
+    { slug: 'snacks', name: 'Snacks', description: 'Bars, nuts, crackers, and better-for-you bites.', imageUrl: nextImage(), sortOrder: 0 },
     { slug: 'breakfast', name: 'Breakfast', description: 'Oats, granolas, and morning staples.', sortOrder: 1 },
     { slug: 'prepared-meals', name: 'Prepared Meals', description: 'Ready-to-heat lunches and dinners.', sortOrder: 2 },
     { slug: 'beverages', name: 'Beverages', description: 'Juices, plant milks, protein shakes.', sortOrder: 3 },
@@ -175,8 +206,8 @@ async function main() {
       extraCategories: ['protein-fitness'],
       tagSlugs: ['healthy', 'high-protein', 'organic', 'kid-friendly'],
       isFeatured: true,
-      image: IMG('photo-1622484219043-4c8d8c4c8c8c'),
-      extraImages: [IMG('photo-1574327766098-e967b4459a8'), IMG('photo-1593095948071-474c5f8e7926')],
+      image: nextImage(),
+      extraImages: [nextImage(), nextImage()],
       variants: [
         { sku: 'GRN-SGL', name: 'Single bar', price: 349, compareAtPrice: 399, stock: 120 },
         { sku: 'GRN-6PK', name: '6-pack', price: 1899, stock: 45 },
@@ -195,7 +226,7 @@ async function main() {
       ingredients: 'Chickpeas, olive oil, sea salt.',
       category: 'snacks',
       tagSlugs: ['healthy', 'vegan', 'gluten-free', 'high-protein', 'low-sodium'],
-      image: IMG('photo-1574327766098-e967b4459a8'),
+      image: nextImage(),
       variants: [
         { sku: 'CHP-4OZ', name: '4 oz', price: 429, stock: 6 },
         { sku: 'CHP-8OZ', name: '8 oz', price: 749, stock: 24 },
@@ -214,7 +245,7 @@ async function main() {
       category: 'dairy-eggs',
       tagSlugs: ['healthy', 'high-protein', 'gluten-free', 'low-carb'],
       isFeatured: true,
-      image: IMG('photo-1488477181946-6428a0291777'),
+      image: nextImage(),
       variants: [
         { sku: 'YOG-16', name: '16 oz', price: 599, compareAtPrice: 649, stock: 80 },
         { sku: 'YOG-32', name: '32 oz', price: 1099, stock: 50 },
@@ -233,7 +264,7 @@ async function main() {
       category: 'protein-fitness',
       tagSlugs: ['high-protein', 'vegan', 'gluten-free', 'sugar-free', 'healthy'],
       isFeatured: true,
-      image: IMG('photo-1593095948071-474c5f8e7926'),
+      image: nextImage(),
       variants: [
         { sku: 'PROT-1LB', name: '1 lb', price: 3499, compareAtPrice: 3999, stock: 40 },
         { sku: 'PROT-2LB', name: '2 lb', price: 5999, stock: 25 },
@@ -251,7 +282,7 @@ async function main() {
       ingredients: 'Cooked quinoa, chickpeas, roasted red peppers, cucumber, olives, lemon juice, olive oil, parsley, garlic, sea salt.',
       category: 'prepared-meals',
       tagSlugs: ['healthy', 'vegan', 'high-protein', 'gluten-free'],
-      image: IMG('photo-1512621776951-a57141f2eefd'),
+      image: nextImage(),
       variants: [
         { sku: 'MED-SGL', name: 'Single meal', price: 899, compareAtPrice: 1049, stock: 35 },
         { sku: 'MED-4PK', name: '4-pack', price: 3299, stock: 15 },
@@ -269,7 +300,7 @@ async function main() {
       ingredients: 'Almond milk, calcium carbonate, sea salt, vitamin E, vitamin D2, gellan gum.',
       category: 'beverages',
       tagSlugs: ['vegan', 'healthy', 'low-carb', 'sugar-free', 'gluten-free'],
-      image: IMG('photo-1563636619-e9143da0883d'),
+      image: nextImage(),
       variants: [
         { sku: 'ALM-32', name: '32 fl oz', price: 379, stock: 60 },
         { sku: 'ALM-64', name: '64 fl oz', price: 649, stock: 40 },
@@ -287,7 +318,7 @@ async function main() {
       ingredients: 'Whole durum wheat semolina.',
       category: 'pantry-staples',
       tagSlugs: ['healthy', 'vegan', 'kid-friendly'],
-      image: IMG('photo-1551462147-858905a516c4'),
+      image: nextImage(),
       variants: [
         { sku: 'PEN-16', name: '16 oz', price: 299, stock: 100 },
         { sku: 'PEN-32', name: '32 oz', price: 549, stock: 70 },
@@ -305,7 +336,7 @@ async function main() {
       ingredients: 'Organic strawberries, organic blueberries, organic raspberries.',
       category: 'frozen-foods',
       tagSlugs: ['organic', 'healthy', 'vegan', 'gluten-free', 'kid-friendly'],
-      image: IMG('photo-1498557850523-fd3d118b962e'),
+      image: nextImage(),
       variants: [
         { sku: 'BRY-10', name: '10 oz', price: 599, stock: 45 },
         { sku: 'BRY-32', name: '32 oz', price: 1499, stock: 30 },
@@ -323,7 +354,7 @@ async function main() {
       ingredients: 'Water, brown rice flour, tapioca starch, sourdough culture, olive oil, sea salt, xanthan gum.',
       category: 'bakery',
       tagSlugs: ['gluten-free', 'healthy', 'vegan'],
-      image: IMG('photo-1509440159596-0249088772ff'),
+      image: nextImage(),
       variants: [
         { sku: 'SDG-1', name: 'Single loaf', price: 799, stock: 4 },
         { sku: 'SDG-2', name: '2-pack', price: 1499, stock: 12 },
@@ -341,7 +372,7 @@ async function main() {
       ingredients: 'Whey protein isolate, dark chocolate, soluble corn fiber, almond butter, sea salt.',
       category: 'protein-fitness',
       tagSlugs: ['high-protein', 'low-carb', 'gluten-free'],
-      image: IMG('photo-1606313564200-e75d5e30476c'),
+      image: nextImage(),
       variants: [
         { sku: 'BAR-CHO', name: 'Chocolate', price: 299, compareAtPrice: 349, stock: 90, attributes: { flavor: 'Chocolate', size: 'Single' } },
         { sku: 'BAR-PB', name: 'Peanut Butter', price: 299, stock: 75, attributes: { flavor: 'Peanut Butter', size: 'Single' } },
@@ -361,7 +392,7 @@ async function main() {
       category: 'protein-fitness',
       tagSlugs: ['high-protein', 'low-sugar', 'gluten-free'],
       isFeatured: true,
-      image: IMG('photo-1606313564200-e75d5e30476c'),
+      image: nextImage(),
       variants: [
         { sku: 'HB-PB-DCH', name: 'Single', price: 249, compareAtPrice: 299, stock: 120, attributes: { flavor: 'Dark Chocolate', size: 'Single' } },
         { sku: 'HB-PB-6PK', name: '6-pack', price: 1349, stock: 45, attributes: { flavor: 'Dark Chocolate', size: '6-pack' } },
@@ -378,7 +409,7 @@ async function main() {
       ingredients: 'Chicken breast strips, broccoli, bell peppers, water, olive oil, garlic, herbs, sea salt.',
       category: 'prepared-meals',
       tagSlugs: ['kid-friendly', 'high-protein'],
-      image: IMG('photo-1546069901-ba9599a7e63c'),
+      image: nextImage(),
       variants: [
         { sku: 'HB-FM-4', name: 'Serves 4', price: 1499, stock: 35, attributes: { size: 'Serves 4' } },
         { sku: 'HB-FM-2', name: 'Serves 2', price: 899, stock: 28, attributes: { size: 'Serves 2' } },
@@ -394,7 +425,7 @@ async function main() {
       ingredients: 'Organic steel-cut oats, organic dried apples, organic cinnamon, sea salt.',
       category: 'breakfast',
       tagSlugs: ['organic', 'high-fiber', 'heart-healthy'],
-      image: IMG('photo-1517686469429-8bdb4b5f9074'),
+      image: nextImage(),
       variants: [{ sku: 'HB-OAT-1', name: '12 oz', price: 549, compareAtPrice: 649, stock: 8, attributes: { size: '12 oz' } }],
       health: { servingSize: '½ cup dry', calories: 150, protein: 5, carbs: 27, fat: 3, fiber: 5, sugar: 6, sodium: 75, allergens: [] },
       rating: 4.7, reviewCount: 203, orderCount: 180,
@@ -407,7 +438,7 @@ async function main() {
       ingredients: '100% extra virgin olive oil.',
       category: 'pantry-staples',
       tagSlugs: ['organic', 'heart-healthy'],
-      image: IMG('photo-1474979266404-7eaacbcd87c5'),
+      image: nextImage(),
       variants: [
         { sku: 'HB-EVOO-250', name: '250ml', price: 899, stock: 40, attributes: { size: '250ml' } },
         { sku: 'HB-EVOO-500', name: '500ml', price: 1299, stock: 60, attributes: { size: '500ml' } },
@@ -425,7 +456,7 @@ async function main() {
       ingredients: 'Enriched wheat flour, cheddar cheese, sunflower oil, sea salt, yeast.',
       category: 'snacks',
       tagSlugs: ['kid-friendly', 'nut-free', 'budget'],
-      image: IMG('photo-1558961363-fa8fdf82db35'),
+      image: nextImage(),
       variants: [{ sku: 'HB-CKR-1', name: '18 pouches', price: 399, compareAtPrice: 479, stock: 55, attributes: { size: '18-pack' } }],
       health: { servingSize: '1 pouch', calories: 130, protein: 3, carbs: 18, fat: 5, sodium: 190, allergens: ['wheat', 'milk'] },
       rating: 4.2, reviewCount: 156, orderCount: 220,
@@ -438,7 +469,7 @@ async function main() {
       ingredients: 'Water, pea protein isolate, rice protein, sunflower oil, monk fruit, natural vanilla, sea salt.',
       category: 'beverages',
       tagSlugs: ['high-protein', 'vegan', 'gluten-free'],
-      image: IMG('photo-1622484219043-4c8d8c4c8c8c'),
+      image: nextImage(),
       variants: [
         { sku: 'HB-SHK-VAN', name: 'Vanilla', price: 329, stock: 70, attributes: { flavor: 'Vanilla Bean' } },
         { sku: 'HB-SHK-CHO', name: 'Chocolate', price: 329, stock: 65, attributes: { flavor: 'Chocolate' } },
@@ -455,7 +486,7 @@ async function main() {
       ingredients: 'Water, carrots, celery, green beans, tomatoes, potato, onion, garlic, basil, oregano.',
       category: 'pantry-staples',
       tagSlugs: ['low-sodium', 'vegan', 'high-fiber'],
-      image: IMG('photo-1547592160-23ac45744acd'),
+      image: nextImage(),
       variants: [{ sku: 'HB-SOUP-1', name: '15 oz can', price: 449, stock: 80, attributes: { size: '15 oz' } }],
       health: { servingSize: '1 cup', calories: 80, protein: 2, carbs: 14, fat: 1, fiber: 4, sodium: 140, allergens: [] },
       rating: 4.5, reviewCount: 44, orderCount: 88,
@@ -468,7 +499,7 @@ async function main() {
       ingredients: 'Brown rice, black beans, corn, water, tomato paste, onion, cumin, chili powder, sea salt.',
       category: 'prepared-meals',
       tagSlugs: ['budget', 'vegan', 'high-fiber', 'quick-prep'],
-      image: IMG('photo-1512621776951-a57141f2eefd'),
+      image: nextImage(),
       variants: [{ sku: 'HB-BWL-1', name: 'Single serve', price: 299, compareAtPrice: 399, stock: 100, attributes: { size: 'Single' } }],
       health: { servingSize: '1 bowl', calories: 320, protein: 9, carbs: 58, fat: 4, fiber: 8, allergens: [] },
       rating: 4.1, reviewCount: 312, orderCount: 400,
@@ -481,7 +512,7 @@ async function main() {
       ingredients: 'Water, organic coffee.',
       category: 'beverages',
       tagSlugs: ['organic', 'low-sugar', 'vegan'],
-      image: IMG('photo-1511927330031-f1f0e4cc8f2e'),
+      image: nextImage(),
       variants: [{ sku: 'HB-CB-1', name: '10 fl oz', price: 499, stock: 45, attributes: { size: '10 fl oz' } }],
       health: { servingSize: '10 fl oz', calories: 5, protein: 0, carbs: 1, fat: 0, sugar: 0, allergens: [] },
       rating: 4.6, reviewCount: 77, orderCount: 120,
@@ -494,7 +525,7 @@ async function main() {
       ingredients: 'Almonds, cashews, pumpkin seeds, sea salt.',
       category: 'snacks',
       tagSlugs: ['healthy', 'high-protein'],
-      image: IMG('photo-1599599810769-39faba15c96a'),
+      image: nextImage(),
       variants: [{ sku: 'HB-NUT-1', name: '8 oz', price: 899, stock: 0, attributes: { size: '8 oz' } }],
       health: { servingSize: '¼ cup', calories: 170, protein: 7, carbs: 6, fat: 14, sodium: 95, allergens: ['tree nuts'] },
       rating: 4.4, reviewCount: 58, orderCount: 42,
