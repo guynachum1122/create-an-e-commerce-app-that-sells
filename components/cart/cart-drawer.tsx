@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { ShoppingBasket } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
+import { RemoteImage } from '@/components/ui/remote-image';
 import { formatPrice } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -85,7 +85,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                   <div key={item.id} className="mb-4 flex gap-3 border-b pb-4">
                     <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md bg-muted">
                       {item.variant.product.images[0] && (
-                        <Image src={item.variant.product.images[0].url} alt="" fill className="object-cover" />
+                        <RemoteImage src={item.variant.product.images[0].url} alt="" fill className="object-cover" />
                       )}
                     </div>
                     <div className="flex-1">
